@@ -1,0 +1,15 @@
+#terraform sensitive files
+terraform.tfvars
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+
+
+# SSH keys — never push these
+*.pem
+*.pub
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db

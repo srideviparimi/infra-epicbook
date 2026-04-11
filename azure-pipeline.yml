@@ -1,0 +1,49 @@
+trigger:
+- main
+
+pool:
+  name: 'azure-static'
+
+variables:
+  terraformVersion: '1.5.7'
+
+stages:
+- stage: Terraform
+  displayName: "Terraform Deployment"
+  jobs:
+  - job: terraform
+    displayName: "Run Terraform"
+    steps:
+
+    # Install Terraform
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: $(terraformVersion)
+
+    # Terraform Init
+    - task: TerraformTaskV4@4
+      displayName: "Terraform Init"
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        backendServiceArm: '<YOUR-SERVICE-CONNECTION>'
+        backendAzureRmResourceGroupName: 'rg-epicbook'
+        backendAzureRmStorageAccountName: 'backendstorage12'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'terraform.tfstate'
+
+    # Terraform Plan
+    - task: TerraformTaskV4@4
+      displayName: "Terraform Plan"
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        environmentServiceNameAzureRM: '<YOUR-SERVICE-CONNECTION>'
+
+    # Terraform Apply
+    - task: TerraformTaskV4@4
+      displayName: "Terraform Apply"
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        environmentServiceNameAzureRM: '<YOUR-SERVICE-CONNECTION>'
