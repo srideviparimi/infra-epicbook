@@ -24,8 +24,16 @@ resource "azurerm_subnet" "app-subnet" {
 }
 
 # public IP
-resource "azurerm_public_ip" "pip" {
-    name                = "epicbook-pip"
+resource "azurerm_public_ip" "web-pip" {
+    name                = "web-pip"
+    location            = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+    allocation_method   = "Static"
+    sku                 = "Standard"
+}
+
+resource "azurerm_public_ip" "app-pip" {
+    name                = "app-pip"
     location            = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     allocation_method   = "Static"
@@ -99,7 +107,7 @@ resource "azurerm_network_interface" "web-nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.web-subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.pip.id 
+    public_ip_address_id          = azurerm_public_ip.web-pip.id 
   }
 }
 
@@ -112,6 +120,7 @@ resource "azurerm_network_interface" "app-nic" {
         name                          = "internal"
         subnet_id                     = azurerm_subnet.app-subnet.id
         private_ip_address_allocation = "Dynamic"
+        public_ip_address_id          = azurerm_public_ip.app-pip.id
     }
 }
 
